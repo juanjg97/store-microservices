@@ -22,10 +22,36 @@ public class ProductController {
         String response = "The product: "+productResponseDto.toString()+" has been saved successfully";
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+    @GetMapping("/{productId}")
+    public ResponseEntity<?> getProductById(@PathVariable String productId){
+        ProductResponseDto productResponseDto = productService.getProduct(productId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(productResponseDto);
+    }
 
     @GetMapping
     public ResponseEntity<?> getAllProducts(){
         List<ProductResponseDto> productsResponseDto = productService.getAllProducts();
         return ResponseEntity.status(HttpStatus.CREATED).body(productsResponseDto);
+    }
+
+    @PutMapping("/{productId}")
+    public ResponseEntity<?> updateProduct(@PathVariable String productId,@RequestBody ProductRequestDto productRequest){
+        ProductResponseDto productResponseDto = productService.updateProduct(productId,productRequest);
+        String response = "The product: "+productResponseDto.toString()+" has been updated successfully";
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PatchMapping("/{productId}")
+    public ResponseEntity<?> updateProductPrice(@PathVariable String productId,@RequestBody ProductRequestDto productRequest){
+        ProductResponseDto productResponseDto = productService.updateProductPrice(productId,productRequest);
+        String response = "The product: "+productResponseDto.toString()+" has changed its price";
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<?> deleteProduct(@PathVariable String productId){
+        productService.deleteProduct(productId);
+        String response = "The product has been deleted";
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

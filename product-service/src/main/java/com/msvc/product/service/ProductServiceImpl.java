@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class ProductServiceImpl {
+public class ProductServiceImpl implements ProductService{
 
     private ProductRepository productRepository;
 
@@ -28,12 +28,41 @@ public class ProductServiceImpl {
         return productResponse;
     }
 
+    @Override
+    public ProductResponseDto getProduct(String productId) {
+        Product product = productRepository.findById(productId).orElseThrow();
+        ProductResponseDto productResponse = ProductMapper.INSTANCE.toDto(product);
+        log.info("The product {} has been gotten from the database",product);
+        return productResponse;
+    }
+
     public List<ProductResponseDto> getAllProducts() {
         List<Product> products = productRepository.findAll();
         List<ProductResponseDto> productsResponse = products.stream()
                 .map(ProductMapper.INSTANCE::toDto)
                 .collect(Collectors.toList());
+        log.info("The products have been gotten from the database");
         return productsResponse;
+    }
+
+    @Override
+    public ProductResponseDto updateProduct(String id, ProductRequestDto productRequestDto) {
+        Product product = productRepository.findById(id).orElseThrow();
+        ProductMapper.INSTANCE.updateProductFromDto(productRequestDto, product);
+        return ProductMapper.INSTANCE.toDto(productRepository.save(product));
+    }
+
+    @Override
+    public ProductResponseDto updateProductPrice(String id, ProductRequestDto productRequestDto) {
+        Product product = productRepository.findById(id).orElseThrow();
+        product.setPrice(productRequestDto.getPrice());
+        return ProductMapper.INSTANCE.toDto(productRepository.save(product));
+    }
+
+    @Override
+    public void deleteProduct(String id) {
+        Product product = productRepository.findById(id).orElseThrow();
+        productRepository.deleteById(id);
     }
 
 }
